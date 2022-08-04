@@ -2,10 +2,10 @@ from django.shortcuts import render
 from django.http import HttpResponse
 
 from .models import Greeting
-from hello import form
+from form import FindTrend
 # Create your views here.
 def index(request):
-    new_form = form()
+    new_form = FindTrend()
     # return HttpResponse('Hello from Python!')
     return render(request, "index.html", {'form': new_form}) 
 
