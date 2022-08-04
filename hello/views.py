@@ -1,8 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .models import Greeting
-from form import FindTrend
+from .models import Greeting, FindTrend
 # Create your views here.
 def index(request):
     new_form = FindTrend()
