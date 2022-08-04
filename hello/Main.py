@@ -4,6 +4,7 @@ from pytrends.request import TrendReq
 from pytrends import dailydata
 import matplotlib.pyplot as plt
 import plotly.graph_objects as go
+from plotly.offline import plot
 from random import randint
 
 colors = []
@@ -54,13 +55,8 @@ def get_graph(word): #word need to be a list
     #result.set_xlabel('Date')
     #result.set_ylabel('Trends Index')
     #result.tick_params(axis='both', which='both', labelsize=10)
-    return df_trends, column
-
-
-fig = go.Figure()
-chart, label = get_graph(["Genshin Impact"])
-for i in range(len(label)):
-    fig.add_trace(go.Scatter(x=chart.date, y=chart[label[i]], name=label[i],
-                         line=dict(color=colors[i], width=4)))
-
-fig.show()
+    fig = go.Figure()
+    for i in range(len(column)):
+        fig.add_trace(go.Scatter(x=df_trends.date, y=df_trends[column[i]], name=column[i], line=dict(color=colors[i], width=4)))
+    
+    return plot(fig, output_type='div')
