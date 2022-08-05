@@ -7,3 +7,5 @@ class Greeting(models.Model):
     
 class FindTrend(forms.Form):
    search_term = forms.CharField(max_length=1000)
+   start_field = models.DateField()
+   end_field = models.DateField()

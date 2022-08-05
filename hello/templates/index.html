@@ -13,6 +13,8 @@
     <p>Enter term to analyze</p>
 
     <form style="color :black;" method="POST">{% csrf_token %}
+        <input type="date" name="Start">
+        <input type="date" name="End">
         <input type="text" name="Term">
         <input type="submit" name="submit">
     </form>
