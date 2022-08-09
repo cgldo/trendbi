@@ -9,3 +9,7 @@ class FindTrend(forms.Form):
    search_term = forms.CharField(max_length=1000)
    start_field = models.DateField()
    end_field = models.DateField()
+   google = forms.BooleanField()
+   youtube = forms.BooleanField()
+   twitter = forms.BooleanField()
+   numbers = models.IntegerField()
