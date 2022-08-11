@@ -17,6 +17,7 @@ import urllib
 from transformers import pipeline
 
 
+chart_title = ['Google Search','Youtube','Google Images','Google News','Google Finance']
 google_search = ['','youtube','images','news','froogle']
 colors = []
 n = 100
@@ -26,12 +27,11 @@ for i in range(n):
 
 
 def scrape_google(word, date, search_type):
-    result_trace = []
+    result_html = []
     for j in range(len(search_type)):
         if search_type[j]:
             pytrend = TrendReq()
             KEYWORDS = word
-            print(KEYWORDS)
             KEYWORDS_CODES=[pytrend.suggestions(keyword=i)[0] for i in KEYWORDS] 
             df_CODES= pd.DataFrame(KEYWORDS_CODES)
             df_CODES
@@ -69,14 +69,16 @@ def scrape_google(word, date, search_type):
             
                     
             df_trends.columns=['date'] + column
-            #result = df_trends.plot(figsize = (12,8),x="date", y=column, kind="line", title = KEYWORDS[0] + " Google Trends")
-            #result.set_xlabel('Date')
-            #result.set_ylabel('Trends Index')
-            #result.tick_params(axis='both', which='both', labelsize=10)
+            fig = go.Figure()
             for k in range(len(column)):
-                result_trace.append(go.Scatter(x=df_trends.date, y=df_trends[column[k]], name=column[k], line=dict(color=colors[k], width=4)))
-
-    return result_trace
+                fig.add_trace(go.Scatter(x=df_trends.date, y=df_trends[column[k]], name=column[k], line=dict(color=colors[k], width=4)))
+            fig.update_xaxes(title_text="Date")
+            fig.update_yaxes(title_text="Search Interest")
+            fig.update_layout(title_text = chart_title[j] + ' Interest', title_x=0.5, title_font_size = 25)
+            result_html.append(plot(fig, output_type='div'))
+        else:
+            result_html.append('<body></body>')
+    return result_html
 
 
 specific_model = pipeline(model="finiteautomata/bertweet-base-sentiment-analysis")
@@ -109,40 +111,50 @@ def twitter_sentiment(term, num = 500):
     neg = 0
     neu = 0
     df = pd.DataFrame(itertools.islice(sntwitter.TwitterSearchScraper(
-        term +' lang:"en-US"').get_items(), num))[['date', 'renderedContent']] 
+        term +' lang:"en-US"').get_items(), num))[['renderedContent']] 
 
     df['tweet_clean'] = df['renderedContent'].apply(cleaner)
     df['sentiment'] = df['tweet_clean'].apply(get_sentiment)
-
-    positive = df[df['sentiment']=='POS']
-    wordcloud = WordCloud(max_font_size=50, max_words=500, background_color="white").generate(str(positive['tweet_clean']))
-
-    df = pd.DataFrame()
-    df['Sentiment'] = ['Positive', 'Negative', 'Neutral']
-    df['Total'] = [pos, neg, neu]
-    fig = go.Figure()
-    fig.add_trace(go.Bar(x=df['Sentiment'],y=df['Total']))
     
+    positive = df[df['sentiment']=='POS']
+    wordcloud = WordCloud(max_font_size=50, max_words=500, background_color="white").generate(' '.join(positive['tweet_clean']))
     plot_fig = plt.figure()
     plt.imshow(wordcloud, interpolation="bilinear")
     plt.axis("off")
-    return [plot(fig, output_type='div'), mpld3.fig_to_html(plot_fig)]
-
-
+    plt.title("Most Used Words From Positive Tweets", fontsize = 40)
+    html_pos = mpld3.fig_to_html(plot_fig)
+    
+    negative = df[df['sentiment']=='NEG']
+    wordcloud = WordCloud(max_font_size=50, max_words=500, background_color="white").generate(' '.join(negative['tweet_clean']))
+    plot_fig = plt.figure()
+    plt.imshow(wordcloud, interpolation="bilinear")
+    plt.axis("off")
+    plt.title("Most Used Words From Negative Tweets", fontsize = 40)
+    
+    df = pd.DataFrame()
+    df['Sentiment'] = ['Positive', 'Negative', 'Neutral']
+    df['Color'] = ['blue', 'red', 'green']
+    df['Total'] = [pos, neg, neu]
+    fig = go.Figure()
+    fig.add_trace(go.Bar(x=df['Sentiment'],y=df['Total'], marker_color=df['Color']))
+    fig.update_layout(title_text = "Count of Positive, Negative, and Neutral Tweets", title_x=0.5, title_font_size = 25)
+    return [plot(fig, output_type='div'), html_pos, mpld3.fig_to_html(plot_fig)]
 
 
 def get_graph(word, date, google = True, youtube = False, twitter = False, number_tweet = 500): #word need to be a list
-    result_trace = []
-    result_twitter = []
+    result_trace = ['<body></body>', '<body></body>']
     if google or youtube:
-        result_trace = scrape_google(word, date, [google, youtube])
-    
+        try:
+            result_trace = scrape_google(word, date, [google, youtube])
+        except:
+            result_trace = ['<body>Google search error</body>', '<body></body>']
     if twitter:
-        result_twitter = twitter_sentiment(word[0], number_tweet)
-    fig = tools.make_subplots(rows=len(result_trace),cols=1, vertical_spacing=0.5)
-    #print(len(result_trace))
-    for i in range(len(result_trace)):
-        fig.add_trace(result_trace[i], row = i + 1, col = 1)
+        try:
+            result_trace =  result_trace + twitter_sentiment(word[0], number_tweet)
+        except:
+            result_trace =  result_trace + ['<body>Twitter search error</body>', '<body></body>', '<body></body>']
+    else:
+        result_trace =  result_trace + ['<body></body>', '<body></body>', '<body></body>']
     
-    return [plot(fig, output_type='div'), result_twitter]
+    return result_trace
 

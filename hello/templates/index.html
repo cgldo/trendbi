@@ -5,13 +5,13 @@
 
 <div class="jumbotron text-center">
   <div class="container">
-    <a href="/" class="lang-logo">
-      <img src="{% static 'lang-logo.png'%}">
+    <a href="https://glenndo.vercel.app/" class="lang-logo">
+      <img src="{% static 'glenndo.png'%}">
     </a>
-    <h1>Getting Started with Python on Heroku</h1>
-    <p>This is a sample Python application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
+    <h1>Simple search term analysis</h1>
+    <p>This is a simple Python application deployed to Heroku. It analyzes a term for Google Search, Youtube, and Twitter. The program returns an interest chart for Google and Youtube and the sentiment analysis of tweets with the term</p>
     <form style="color :black;" method="POST">{% csrf_token %}
-      <p><b>Enter term(s) to analyze, separate terms with a comma</b></p>
+      <p><b>Enter a term to analyze. On the right, enter the number of tweets to analyze</b></p>
       <input type="text" name="Term">
       <input type="number" name="numbers">
       <p><input type="date" name="Start">
@@ -22,27 +22,38 @@
             <em>Twitter: </em> <input type="checkbox" name="twitter"></p>
         <p><input type="submit" name="submit"></p>
     </form>
+    <p> You searched for: {{search}} <p>
   </div>
 </div>
-<div class="container">
-  <div class="alert alert-info text-center" role="alert">
-    To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to the <a href="https://devcenter.heroku.com/articles/getting-started-with-python" class="alert-link">Getting Started with Python on Heroku</a> tutorial.
-  </div>
+<div class="containter">
   <hr>
-  <div class="row">
+  <div class="item1">
   {% autoescape off %}
-  {{ plot_div }}
+  {{ goog }}
   {% endautoescape %}
-  </div> <!-- row -->
-  <div class="row">
+  </div> 
+  <div class="item2">
+    {% autoescape off %}
+    {{ yout }}
+    {% endautoescape %}
+    </div> 
+  <div class="item3">
     {% autoescape off %}
     {{ twitter_plot1 }}
     {% endautoescape %}
   </div>
-  <div class="row">
+  <div class="wrap-flex">
+    <div>
     {% autoescape off %}
-    {{ twitter_plot2 }}
+    {{  twitter_plot2 }}
     {% endautoescape %}
+  </div>
+    <div>
+      {% autoescape off %}
+      {{  twitter_plot3 }}
+      {% endautoescape %} 
+    </div>
+  </div>
   </div>
 </div>
 {% endblock %}

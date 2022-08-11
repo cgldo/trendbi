@@ -7,7 +7,8 @@ import re
 
 # Create your views here.
 def index(request):
-    plot_div = ['<body></body>', ['<body></body>', '<body></body>']]
+    plot_div = ['<body></body>', '<body></body>', '<body></body>', '<body></body>', '<body></body>']
+    message = ['']
     if request.method == 'POST':
         # create an instance of our form, and fill it with the POST data
         message = [x.strip() for x in re.split(',+', request.POST.get('Term'))]
@@ -16,16 +17,21 @@ def index(request):
         google = request.POST.get('google')
         youtube = request.POST.get('youtube')
         twitter = request.POST.get('twitter')
-        numbers = int(request.POST.get('numbers'))
+        try:
+            numbers = int(request.POST.get('numbers'))
+        except:
+            numbers = 0
+        #try:
         plot_div = get_graph(message, start + " " + end, google, youtube, twitter, numbers)
+       #except:
+        #    None
     # if the form is not valid, we let execution continue to the return
     # statement below, and display the form again (with errors).
-
     else:
     # this must be a GET request, so create an empty form
         new_form = FindTrend()
     # return HttpResponse('Hello from Python!')
-    return render(request, "index.html", {'plot_div': plot_div[0], 'twitter_plot1': (plot_div[1])[0], 'twitter_plot2': (plot_div[1])[1]}) 
+    return render(request, "index.html", {'search': " ".join(message),'goog': plot_div[0], 'yout': plot_div[1], 'twitter_plot1': plot_div[2], 'twitter_plot2': plot_div[3], 'twitter_plot3': plot_div[4]}) 
 
 
 def db(request):
