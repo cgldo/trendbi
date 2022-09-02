@@ -106,6 +106,8 @@ def cleaner(tweet):
     return tweet
 
 def twitter_sentiment(term, num = 500):
+    if num > 1000:
+        num = 1000
     global pos, neg, neu
     pos = 0
     neg = 0
