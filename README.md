@@ -1,13 +1,28 @@
-# Python: Getting Started
+# Trendbi
 
-A barebones Django app, which can easily be deployed to Heroku.
+A Django app used to visualize micro trends about search term on google, youtube and twitter
 
-This application supports the [Getting Started with Python on Heroku](https://devcenter.heroku.com/articles/getting-started-with-python) article - check it out for instructions on how to deploy this app to Heroku and also run it locally.
+## Packages Used for Data
 
-Alternatively, you can deploy it using this Heroku Button:
+#### For Google and Youtube
+pytrends - search index data
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+#### For Twitter
+snscrape - for scraping tweets from Twitter
+https://github.com/VinAIResearch/BERTweet - used for sentiment analysis
 
-For more information about using Python on Heroku, see these Dev Center articles:
+#### For visualization
+plotly - line and bar charts
+WordCloud - for the positive and negative sentiment wordcloud
 
-- [Python on Heroku](https://devcenter.heroku.com/categories/python)
+## Installation
+Create a virtual environment for Python on your machine
+run pip install -r requirements.txt
+run py manage.py runserver
+
+## Sample run on the app
+
+![Input](input.JPG?raw=true "Example of using the app")
+![Input](Googlechart.JPG?raw=true "Sample result chart")
+![Input](wordcloud.JPG?raw=true "Sample result wordcloud")
+
